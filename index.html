@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blockchain Simulation (Linked List Based)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .block {
+      background: #fff;
+      border: 2px solid #007bff;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .block p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    .add-form {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    input[type="text"] {
+      padding: 8px;
+      width: 250px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      padding: 8px 12px;
+      margin-left: 10px;
+      border: none;
+      background: #007bff;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Blockchain Simulation (Linked List Based)</h1>
+
+  <div class="add-form">
+    <input type="text" id="blockData" placeholder="Enter block data">
+    <button onclick="addBlock()">Add Block</button>
+  </div>
+
+  <div id="blockchain"></div>
+
+  <script>
+    let blockchain = [];
+
+    function getCurrentTimestamp() {
+      return new Date().toLocaleString();
+    }
+
+    function simpleHash(index, data, prevHash, timestamp) {
+      return btoa(index + data + prevHash + timestamp).slice(0, 16);
+    }
+
+    function addBlock() {
+      const data = document.getElementById("blockData").value.trim();
+      if (!data) return alert("Please enter data for the block.");
+
+      const index = blockchain.length;
+      const prevHash = index === 0 ? "0" : blockchain[index - 1].hash;
+      const timestamp = getCurrentTimestamp();
+      const hash = simpleHash(index, data, prevHash, timestamp);
+
+      const newBlock = {
+        index,
+        data,
+        timestamp,
+        prevHash,
+        hash
+      };
+
+      blockchain.push(newBlock);
+      displayBlockchain();
+      document.getElementById("blockData").value = "";
+    }
+
+    function displayBlockchain() {
+      const container = document.getElementById("blockchain");
+      container.innerHTML = "";
+      blockchain.forEach(block => {
+        const blockDiv = document.createElement("div");
+        blockDiv.className = "block";
+        blockDiv.innerHTML = `
+          <p><strong>Block #${block.index}</strong></p>
+          <p>Data: ${block.data}</p>
+          <p>Timestamp: ${block.timestamp}</p>
+          <p>Previous Hash: ${block.prevHash}</p>
+          <p>Hash: ${block.hash}</p>
+        `;
+        container.appendChild(blockDiv);
+      });
+    }
+
+    // Add Genesis Block
+    blockchain.push({
+      index: 0,
+      data: "Genesis Block",
+      timestamp: getCurrentTimestamp(),
+      prevHash: "0",
+      hash: simpleHash(0, "Genesis Block", "0", getCurrentTimestamp())
+    });
+    displayBlockchain();
+  </script>
+</body>
+</html>
